@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    *{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    
+    }
+    body{
+        background-image: radial-gradient( circle 311px at 8.6% 27.9%,  rgba(62,147,252,0.57) 12.9%, rgba(239,183,192,0.44) 91.2% );
+        height: 100vh;
+        padding: 40px;
+    }
+    .quiz-container{
+        background-color: #fff;
+        width: 100%;
+        max-width: 550px;
+        border-radius: 10px;
+        padding: 30px 15px;
+        margin: 100px auto 30px;
+    }
+    h1{
+        font-size: 25px;
+        padding-bottom: 20px;
+    }
+    #question{
+        font-size: 16px;
+        padding-bottom: 10px;
+    }
+    .question-container{
+        border-top: 1px solid #000;
+        padding-top: 20px;
+    }
+    .btn{
+        width: 100%;
+        text-align: left;
+        padding: 5px;
+        margin: 7px 0 7px 0;
+        height: 40px;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+    .btn:hover:not([disabled]){
+        background-color: #000;
+        color: #fff;
+    }
+    .btn:disabled{
+        cursor: no-drop;
+    }
+    #nextbtn{
+        width:140px;
+        height: 30px;
+        text-align: center;
+        margin: 10px auto 10px;
+        border: none;
+        border-radius: 5px;
+        display: none;
+        background-color: rgb(47, 181, 243);
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .correct{
+        background-color: rgb(111, 214, 111);
+    }
+    .notCorrect{
+        background-color: rgb(240, 113, 113);
+    }
+    .lowScore{
+        color: rgb(240, 113, 113);
+    }
+    .highScore{
+        color: rgb(111, 214, 111);
+    }
+    .input{
+        width: 100%;
+        text-align: left;
+        padding: 5px;
+        margin: 7px 0 7px 0;
+        height: 40px;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+    
+    .submitBtn{
+        width:140px;
+        height: 30px;
+        text-align: center;
+        margin: 10px auto 10px;
+        border: none;
+        border-radius: 5px;
+        display: block;
+        background-color: rgb(47, 181, 243);
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+</style>
+<body>
+    <div class="quiz-container">
+        <h1> Simple Quiz</h1>
+        <div class="question-container">
+            <h2 id="question"> question goes here</h2>
+            <div id="ansbuttons">
+                <button class="btn" >answer 1</button>
+                <button class="btn" >answer 2</button>
+                <button class="btn" >answer 3</button>
+                <button class="btn" >answer 4</button>
+            </div>
+        </div>
+        <button id="nextbtn">Next</button>
+    </div>
+
+    <script>
+        
+const questions = [
+{
+    question: 'Who is the most followed person on instagram?',
+    answers: [
+        {text: 'Selena Gomez', correct: false},
+        {text: 'Lionel Messi', correct: false},
+        {text: 'Cristiano Ronaldo', correct: true},
+        {text: 'Selena Gomez', correct: false},
+    ]
+},
+{
+    question: 'Who is the second richest man in the world?',
+    answers: [
+        {text: 'Mark Zuckerberg', correct: false},
+        {text: 'Bernard Arnault', correct: true},
+        {text: 'Stephen Successful', correct: false},
+        {text: 'Jeff Bezos', correct: false},
+    ]
+},
+{
+    question: 'What is the highest mountain in Nigeria?',
+    answers: [
+        {text: 'Chappal Waddi', correct: true},
+        {text: 'Kilimanjaro', correct: false},
+        {text: 'Mount Assirik', correct: false},
+        {text: 'Mount Kenya', correct: false},
+    ]
+},
+{
+    question: 'What is the largest animal in the world?',
+    answers: [
+        {text: 'Elephant', correct: false},
+        {text: 'Shark', correct: false},
+        {text: 'Crocodile', correct: false},
+        {text: 'Blue Whale', correct: true},
+    ]
+},
+{
+    question: 'What is the smallest continent in the world?',
+    answers: [
+        {text: 'Africa', correct: false},
+        {text: 'Asia', correct: false},
+        {text: 'Australia', correct: true},
+        {text: 'Arctic', correct: false},
+    ]
+},
+
+]
+
+
+const ansbuttons = document.getElementById('ansbuttons');
+const questionElement = document.getElementById('question');
+const nextButton = document.getElementById('nextbtn');
+let currentQuestionIndex = 0;
+let startingScore = 0;
+let username = '';
+
+function getName(){
+resetState();
+questionElement.innerHTML = "To start quiz, enter your name";
+
+const input = document.createElement('input');
+input.type = "text";
+input.placeholder = "Your name here";
+input.classList.add('input');
+ansbuttons.appendChild(input);
+
+
+const submitButton = document.createElement('button');
+submitButton.innerHTML = 'submit';
+submitButton.classList.add('submitBtn');
+ansbuttons.appendChild(submitButton);
+
+submitButton.addEventListener('click', function(){
+    let firstLetter = input.value.slice(0,1);
+    let capitalFirstLetter = firstLetter.toUpperCase();
+    let remainLetter = input.value.slice(1, input.value.length);
+    let lowerRemainLetter = remainLetter.toLowerCase();
+    username = capitalFirstLetter + lowerRemainLetter;
+    
+    if(username){
+        startQuiz();
+    }else{
+        alert("Please enter your name");
+    }
+})
+
+}
+
+
+function startQuiz(){
+currentQuestionIndex = 0;
+startingScore = 0;
+nextButton.innerHTML = 'Next';
+showQuestion();
+}
+
+function showQuestion(){
+resetState()
+let currentQuestion = questions[currentQuestionIndex];
+let questionNo = currentQuestionIndex + 1;
+questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+currentQuestion.answers.forEach(answers =>{
+    const button= document.createElement('button');
+    button.innerHTML = answers.text;
+    button.classList.add('btn');
+    ansbuttons.appendChild(button);
+    if(answers.correct){
+        button.dataset.correct = answers.correct;
+    }
+    button.addEventListener('click', selectAnswer);
+    nextButton.style.display = 'none';
+})
+
+}
+
+function resetState(){
+while(ansbuttons.firstChild){
+    ansbuttons.removeChild(ansbuttons.firstChild);
+}
+}
+
+function selectAnswer(e){
+const selectedBtn = e.target;
+const isCorrect = selectedBtn.dataset.correct === 'true';
+if(isCorrect){
+    selectedBtn.classList.add('correct');
+    startingScore ++;
+}else{
+    selectedBtn.classList.add('notCorrect');
+}
+Array.from(ansbuttons.children).forEach(button =>{
+    if(button.dataset.correct === 'true'){
+        button.classList.add('correct');
+    }
+    button.disabled = true;
+})
+nextButton.style.display = 'block';
+}
+function showScore(){
+resetState();
+questionElement.innerHTML = `${username}, you scored <span id="score">${startingScore}<span> out of ${questions.length}!`;
+const score = document.getElementById('score');
+if(startingScore <= 2){
+score.classList.add('lowScore');
+}else{
+score.classList.add('highScore');
+}
+nextButton.innerHTML = 'Start Again';
+nextButton.style.display = 'block';
+}
+
+function nextQuiz(){
+currentQuestionIndex++;
+if(currentQuestionIndex < questions.length){
+    showQuestion();
+}else{
+    showScore();
+}
+}
+nextButton.addEventListener("click", () => {
+if(currentQuestionIndex < questions.length){
+    nextQuiz();
+}else{
+    startQuiz();
+}
+})
+
+
+getName();
+    </script>
+</body>
+</html>
